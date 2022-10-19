@@ -2,9 +2,8 @@ import { HttpException, HttpStatus, ValidationError, ValidationPipe } from '@nes
 
 export default class ValidatePipe extends ValidationPipe {
   protected flattenValidationErrors(validationErrors: ValidationError[]): string[] {
-    console.log(validationErrors)
     const messages = validationErrors.map((error) => {
-      return { field: error.property, message: Object.values(error.constraints)[0] }
+      return { field: error.property, message: Object.values(error.constraints) }
     })
 
     throw new HttpException(

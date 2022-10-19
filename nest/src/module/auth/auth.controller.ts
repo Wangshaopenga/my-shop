@@ -12,12 +12,11 @@ export class AuthController {
   @Auth(Role.User)
   @Get()
   head() {
-    return 1
+    return 11
   }
 
   @Post('register')
   register(@Body() registerDto: RegisterDto) {
-    return registerDto
-    // return this.authService.register()
+    return this.authService.register(registerDto)
   }
 }

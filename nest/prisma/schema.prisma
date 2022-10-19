@@ -18,7 +18,8 @@ model Users {
   password  String     @db.VarChar(255) //密码
   phone     String?    @unique @db.VarChar(255) //手机
   avatar    String?    @db.VarChar(255) //头像
-  is_locked Int        @db.UnsignedInt //用户禁用状态: 0正常 1禁用
+  is_locked Int?       @default(0) @db.UnsignedInt //用户禁用状态: 0正常 1禁用
+  role      String?    @default("user")
   createdAt DateTime   @default(now()) //添加时间
   updatedAt DateTime   @updatedAt //修改时间
   Goods     Goods[]
