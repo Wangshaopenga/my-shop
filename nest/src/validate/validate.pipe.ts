@@ -2,10 +2,10 @@ import { HttpException, HttpStatus, ValidationError, ValidationPipe } from '@nes
 
 export default class ValidatePipe extends ValidationPipe {
   protected flattenValidationErrors(validationErrors: ValidationError[]): string[] {
-    const messages = validationErrors.map((error) => {
-      return { field: error.property, message: Object.values(error.constraints) }
+    const messages = {}
+    validationErrors.forEach((error) => {
+      messages[error.property] = Object.values(error.constraints)[0]
     })
-
     throw new HttpException(
       {
         code: HttpStatus.BAD_REQUEST,

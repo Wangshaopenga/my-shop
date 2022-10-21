@@ -2,10 +2,10 @@
 import { ValidationArguments, ValidationOptions, registerDecorator } from 'class-validator'
 import { PrismaClient } from '@prisma/client'
 // 表字段是否唯一
-export function IsNotExistsRule(table: string, validationOptions?: ValidationOptions) {
+export function IsExists(table: string, validationOptions?: ValidationOptions) {
   return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({
-      name: 'IsNotExistsRule',
+      name: 'IsExists',
       target: object.constructor,
       propertyName,
       constraints: [table],

@@ -2,10 +2,10 @@
 import { ValidationArguments, ValidationOptions, registerDecorator } from 'class-validator'
 
 // 表字段是否唯一
-export function IsConfirmRule(validationOptions?: ValidationOptions) {
+export function IsConfirm(validationOptions?: ValidationOptions) {
   return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({
-      name: 'IsConfirmRule',
+      name: 'IsConfirm',
       target: object.constructor,
       propertyName,
       constraints: [],

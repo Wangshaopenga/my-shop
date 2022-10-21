@@ -1,22 +1,30 @@
-import { Body, Controller, Get, Post } from '@nestjs/common'
+import { Body, Controller, Post, UseGuards } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
+import { Users } from '@prisma/client'
 import { AuthService } from './auth.service'
-import { Auth } from './decorator/auth.decorator'
+import { CurrentUser } from './decorator/user.decorator'
+import { LoginDto } from './dto/login.dto'
 import { RegisterDto } from './dto/register.dto'
-import { Role } from './role.enum'
+import { UpdateDto } from './dto/updata.dto'
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {
   }
 
-  @Auth(Role.User)
-  @Get()
-  head() {
-    return 11
-  }
-
   @Post('register')
   register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto)
+  }
+
+  @Post('login')
+  login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto)
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('update')
+  update(@Body() updateDto: UpdateDto, @CurrentUser() user: Users) {
+    return this.authService.update(updateDto, user)
   }
 }

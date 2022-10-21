@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { hash } from 'argon2'
+import { Users } from '@prisma/client'
+import { hash, verify } from 'argon2'
 import { PrismaService } from '../prisma/prisma.service'
+import { LoginDto } from './dto/login.dto'
 import { RegisterDto } from './dto/register.dto'
+import { UpdateDto } from './dto/updata.dto'
 
 @Injectable()
 export class AuthService {
@@ -18,8 +21,46 @@ export class AuthService {
     })
     delete res.password
     return {
-      ...res,
+      info: res,
       token: (await this.token(res)).token,
+    }
+  }
+
+  async login(loginDto: LoginDto) {
+    const user = await this.prisma.users.findUnique({
+      where: {
+        email: loginDto.email,
+      },
+    })
+    delete user.password
+    return {
+      info: user,
+      ...(await this.token(user)),
+    }
+  }
+
+  async update(updateDto: UpdateDto, user: Users) {
+    const res = await this.prisma.users.findUnique({
+      where: {
+        id: user.id,
+      },
+    })
+    console.log(res)
+    const isConfirm = await verify(res.password, updateDto.old_password)
+    if (!isConfirm)
+      throw new BadRequestException('两次密码不一致')
+    const isModi = await this.prisma.users.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: await hash(updateDto.password),
+      },
+    })
+    if (isModi) {
+      return {
+        success: '修改成功!',
+      }
     }
   }
 
@@ -32,3 +73,4 @@ export class AuthService {
     }
   }
 }
+
