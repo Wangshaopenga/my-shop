@@ -36,9 +36,10 @@ model Categories {
   pid       Int //	父级
   status    Int //状态: 0禁用 1启用
   level     Int //分类级别 1 2 3
-  group     String   @db.VarChar(255) //	分组: goods 商品分组, menu 菜单分组
+  group     String?   @db.VarChar(255) //	分组: goods 商品分组, menu 菜单分组
   createdAt DateTime @default(now()) //添加时间
   updatedAt DateTime @updatedAt //修改时间
+  
   Goods     Goods[]
 }
 
@@ -51,7 +52,7 @@ model Goods {
   categoryId   Int            @db.UnsignedInt //分类
   title        String         @db.VarChar(255) //标题
   description  String         @db.VarChar(255) //描述
-  price        Int //价格
+  price        Float //价格
   stock        Int //库存
   cover        String         @db.VarChar(255) //	封面图
   pics         Json //小图集
@@ -108,10 +109,10 @@ model Orders {
 // 订单详情表
 model OrderDetails {
   id        Int      @id @default(autoincrement()) @db.UnsignedInt //	自增长主键ID
-  ordersId  Int      @db.UnsignedInt //所属订单
-  orderId   Orders   @relation(fields: [ordersId], references: [id])
-  goodsId   Int      @db.UnsignedInt //	商品
-  goodId    Goods    @relation(fields: [goodsId], references: [id])
+  orderId  Int      @db.UnsignedInt //所属订单
+  orders   Orders   @relation(fields: [orderId], references: [id])
+  goodId   Int      @db.UnsignedInt //	商品
+  goods    Goods    @relation(fields: [goodId], references: [id])
   price     Int //	商品的价格
   num       Int //	商品的数量
   createdAt DateTime @default(now()) //添加时间
@@ -125,7 +126,7 @@ model Slides {
   img       String //轮播图图片
   url       String? //	跳转连接
   status    Int?     @default(0) //状态: 0禁用 1正常
-  seq       Int?     @default(1) //排序
+  seq       Int?     @default(1)  //排序
   createdAt DateTime @default(now()) //添加时间
   updatedAt DateTime @updatedAt //修改时间
 }
@@ -133,10 +134,10 @@ model Slides {
 // 购物车
 model Cart {
   id        Int      @id @unique @default(autoincrement()) @db.UnsignedInt //自增长主键ID
-  userId    Users    @relation(fields: [usersId], references: [id])
-  usersId   Int      @db.UnsignedInt //	用户ID
-  goodId    Goods    @relation(fields: [goodsId], references: [id])
-  goodsId   Int      @db.UnsignedInt //商品ID
+  users    Users    @relation(fields: [userId], references: [id])
+  userId   Int      @db.UnsignedInt //	用户ID
+  goods    Goods    @relation(fields: [goodId], references: [id])
+  goodId   Int      @db.UnsignedInt //商品ID
   num       Int?     @default(1) //	商品数量
   isChecked Int?     @default(1) //	是否选择: 0不选 1选中
   createdAt DateTime @default(now()) //添加时间
@@ -146,8 +147,8 @@ model Cart {
 // 收货地址表
 model Address {
   id        Int      @id @unique @default(autoincrement()) @db.UnsignedInt //自增长主键ID
-  userId    Users    @relation(fields: [usersId], references: [id])
-  usersId   Int      @db.UnsignedInt //用户ID
+  users    Users    @relation(fields: [userId], references: [id])
+  userId   Int      @db.UnsignedInt //用户ID
   name      String //收货人
   province  String //省份
   city      String //城市
