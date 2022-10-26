@@ -45,7 +45,7 @@ export class FrontService {
       orderBy: [
         { price: +price === 2 ? 'asc' : 'desc' },
         { sales: +sales === 2 ? 'asc' : 'desc' },
-    ],
+      ],
     })
     const goodsInfo = {
       current_page: page,
@@ -65,8 +65,29 @@ export class FrontService {
     return { goods: goodsInfo, recommend_goods, categories: tree }
   }
 
-  goodsDetails(id: number) {
-    return `This action returns a #${id} front`
+  async goodsDetails(id: number) {
+    const goods = await this.prisma.goods.findUnique({
+      where: {
+        id,
+      },
+    })
+    const comments = await this.prisma.comments.findMany({ where: { goodId: id } })
+    const commentsData = []
+    for (let e of comments) {
+      const user = await this.prisma.users.findUnique({
+        select: {
+          id: true, name: true, avatar: true,
+        },
+        where: { id: e.userId },
+      })
+      commentsData.push({ ...e, user })
+    }
+    const collects_count = await this.prisma.cart.count({
+      where: {
+        goodId: id,
+      },
+    })
+    return { goods, collects_count, comments: commentsData }
   }
 
   buildTree(list: Categories[]) {
@@ -90,7 +111,7 @@ export class FrontService {
     return tree
   }
 
- async getGoodsDate(list: Goods[]) {
+  async getGoodsDate(list: Goods[]) {
     let data = []
     for (let e of list) {
       const comments_count = await this.prisma.comments.count({
