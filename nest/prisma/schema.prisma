@@ -72,8 +72,8 @@ model Comments {
   id        Int      @id @unique @default(autoincrement()) //自增长主键ID
   userId    Int      @db.UnsignedInt //评论的用户
   User      Users    @relation(fields: [userId], references: [id])
-  OrderId   Int      @db.UnsignedInt //	所属订单
-  Order     Orders   @relation(fields: [OrderId], references: [id])
+  orderId   Int      @db.UnsignedInt //	所属订单
+  Orders     Orders   @relation(fields: [orderId], references: [id])
   goodId    Int      @db.UnsignedInt //所属商品
   Good      Goods    @relation(fields: [goodId], references: [id])
   content   String //	评论的内容

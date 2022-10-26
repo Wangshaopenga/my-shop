@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { PrismaClient } from '@prisma/client'
 import { hash } from 'argon2'
 import { Random } from 'mockjs'
@@ -14,24 +15,25 @@ async function user() {
     },
   })
 }
-async function address() {
+async function address(id: number) {
   await prisma.address.create({
     data: {
-      userId: 1,
+      userId: id,
       county: '中国',
       province: '山东省',
       city: '曲阜市',
       address: '曲阜师范大学',
       name: '王少鹏',
       phone: '15866129702',
+      isDefault: 1,
     },
   })
 }
 async function cart() {
   await prisma.cart.create({
     data: {
-      goodId: 1,
-      userId: 1,
+      goodId: Random.integer(1, 30),
+      userId: Random.integer(1, 21),
     },
   })
 }
@@ -75,15 +77,46 @@ async function slides() {
   })
 }
 
+async function comments() {
+  await prisma.comments.create({
+    data: {
+      goodId: Random.integer(1, 30),
+      OrderId: Random.integer(1, 999),
+      rate: Random.integer(1, 3),
+      star: Random.integer(1, 5),
+      userId: Random.integer(1, 21),
+      reply: Random.csentence(),
+      content: Random.cparagraph(1, 10),
+    },
+  })
+}
+async function orders() {
+  await prisma.orders.create({
+    data: {
+      amount: Random.integer(10, 150),
+      orderNo: `${Random.integer(1000)}`,
+      addressId: Random.integer(1, 21),
+      status: Random.integer(1, 5),
+      payTime: new Date(),
+      payType: '支付宝',
+      tradNo: `${Random.integer(1000)}`,
+      expressType: 'SF',
+      expressNo: `${Random.integer(1000000000, 99999999999999)}`,
+      userId: Random.integer(1, 21),
+    },
+  })
+}
+
 async function run() {
-  for (let index = 0; index < 6; index++)
+  for (let index = 0; index < 100; index++)
+    // await orders()
     // await user()
     // await category()
     // await goods()
     // await cart()
-    // await address()
-    await slides()
-
+    // await address(index + 1)
+    // await slides()
+    await comments()
   console.log('finish')
 }
 
