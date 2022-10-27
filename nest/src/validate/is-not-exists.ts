@@ -15,7 +15,7 @@ export function IsNotExists(table: string, validationOptions?: ValidationOptions
           const prisma = new PrismaClient()
           const res = await prisma[table].findFirst({
             where: {
-              [args.property]: value,
+              id: value,
             },
           })
           return res

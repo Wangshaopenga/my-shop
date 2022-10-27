@@ -51,7 +51,7 @@ async function goods() {
       isRecommend: Random.integer(0, 1),
       isOn: Random.integer(0, 1),
       categoryId: Random.integer(1, 13),
-      userId: Random.integer(1, 1),
+      userId: Random.integer(1, 30),
     },
   })
 }
@@ -81,10 +81,10 @@ async function comments() {
   await prisma.comments.create({
     data: {
       goodId: Random.integer(1, 30),
-      OrderId: Random.integer(1, 999),
+      orderId: Random.integer(1, 560),
       rate: Random.integer(1, 3),
       star: Random.integer(1, 5),
-      userId: Random.integer(1, 21),
+      userId: Random.integer(1, 30),
       reply: Random.csentence(),
       content: Random.cparagraph(1, 10),
     },
@@ -102,21 +102,34 @@ async function orders() {
       tradNo: `${Random.integer(1000)}`,
       expressType: 'SF',
       expressNo: `${Random.integer(1000000000, 99999999999999)}`,
-      userId: Random.integer(1, 21),
+      userId: Random.integer(1, 30),
+    },
+  })
+}
+
+async function orders_detail(id: number) {
+  const order = await prisma.orders.findUnique({ where: { id } })
+  await prisma.orderDetails.create({
+    data: {
+      num: Random.integer(1, 10),
+      price: order.amount,
+      goodId: Random.integer(1, 30),
+      orderId: id,
     },
   })
 }
 
 async function run() {
-  for (let index = 0; index < 100; index++)
-    // await orders()
+  for (let i = 531; i < 560; i++)
     // await user()
     // await category()
+    // await address(i + 1)
+    // await orders()
     // await goods()
+    await orders_detail(i + 1)
     // await cart()
-    // await address(index + 1)
     // await slides()
-    await comments()
+    // await comments()
   console.log('finish')
 }
 
