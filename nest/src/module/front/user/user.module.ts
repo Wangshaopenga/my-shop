@@ -13,7 +13,6 @@ import { UserController } from './user.controller'
           storage: diskStorage({
             destination: 'uploads',
             filename: (req, file, callback) => {
-              console.log(file)
               const path = `${Date.now()}${extname(file.originalname)}`
               callback(null, path)
             },

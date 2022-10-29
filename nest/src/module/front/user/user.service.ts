@@ -1,13 +1,17 @@
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { Users } from '@prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService, private config: ConfigService) { }
 
-  profile(user: Users) {
-    return user
+  async profile(user: Users) {
+    const infos = await this.prisma.users.findUnique({ where: { id: user.id } })
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...info } = infos
+    return { ...info, avatar_url: `${this.config.get('STATIC_BASE_URL')}/${info.avatar}` }
   }
 
   async updateName(name: string, info: Users) {
@@ -20,16 +24,17 @@ export class UserService {
   }
 
   async uploadAvatar(usre: Users, file: Express.Multer.File) {
-    // this.prisma.users.update({
-    //   where: {
-    //     id: usre.id,
-    //   },
-    //   data: {
-    //     avatar: file,
-    //   },
-    // })
     if (!file)
       throw new BadRequestException({ message: '头像不能为空' })
-    return file
+    const user = await this.prisma.users.update({
+      where: {
+        id: usre.id,
+      },
+      data: {
+        avatar: file.filename,
+      },
+    })
+    // return { message: '更新成功!' }
+    return user
   }
 }
