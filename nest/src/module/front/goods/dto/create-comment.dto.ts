@@ -5,7 +5,7 @@ import { IsNotExists } from '@/validate/is-not-exists'
 export class CreateCommentDto {
   @Type(() => Number)
   @IsNotEmpty({ message: '商品id不能为空' })
-  @IsNotExists('goods', { message: '商品不存在' })
+  @IsNotExists('goods', 'id', { message: '商品不存在' })
   goodId: number
 
   @Type(() => Number)

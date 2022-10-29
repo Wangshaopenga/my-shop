@@ -16,13 +16,13 @@ export class UserController {
   }
 
   @Put()
-  @Auth(Role.Admin, Role.User)
+  @Auth()
   updateName(@Body('name') name: string, @CurrentUser() user: Users) {
     return this.userService.updateName(name, user)
   }
 
   @Post('avatar')
-  @Auth(Role.Admin, Role.User)
+  @Auth()
   @UseInterceptors(FileInterceptor('file'))
   uploadAvatar(@UploadedFile() file: Express.Multer.File, @CurrentUser() user: Users) {
     return this.userService.uploadAvatar(user, file)

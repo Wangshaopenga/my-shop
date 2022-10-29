@@ -20,12 +20,12 @@ export class GoodsController {
     return this.goodsService.getGoods(query.page, query.title, +query.category_id, query.recommend, query.price, query.sales)
   }
 
-  @Get('/:id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.goodsService.goodsDetails(+id)
   }
 
-  @Post('/comment')
+  @Post('comment')
   @Auth(Role.User, Role.Admin)
   comment(@Body() dto: CreateCommentDto, @CurrentUser() user: Users) {
     return this.goodsService.comments(dto, user)
