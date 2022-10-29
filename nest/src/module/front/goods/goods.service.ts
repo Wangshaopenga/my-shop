@@ -1,34 +1,12 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Categories, Goods } from '@prisma/client'
-import { PrismaService } from '../prisma/prisma.service'
+import { Categories, Goods, Users } from '@prisma/client'
+import { PrismaService } from '../../prisma/prisma.service'
 import { CreateCommentDto } from './dto/create-comment.dto'
 
 @Injectable()
-export class FrontService {
+export class GoodsService {
   constructor(private prisma: PrismaService, private config: ConfigService) { }
-
-  async getIndex(page = 1, recommend = 1) {
-    const row: number = this.config.get('RECOMMENDGOODS_PAGE_ROW')
-    const slides = await this.prisma.slides.findMany()
-    const categories = await this.prisma.categories.findMany()
-    const goods = await this.prisma.goods.findMany({
-      skip: (page - 1) * row,
-      take: +row,
-    })
-    const tree = this.buildTree(categories)
-    const goodsInfo = {
-      current_page: page,
-      data: goods,
-      from: (page - 1) * row + 1,
-      to: (page - 1) * row + 1 + goods.length,
-      first_page_url: `${this.config.get('URL')}/index?page=${1}&recommend=${recommend}`,
-      next_page_url: `${this.config.get('URL')}/index?page=${+page + 1}&recommend=${recommend}`,
-      per_page: row,
-
-    }
-    return { categories: tree, goods: goodsInfo, slides }
-  }
 
   async getGoods(page = 1, title?: string, categoryId?: number, recommend = 2, price = 2, sales = 1) {
     const categories = await this.prisma.categories.findMany()
@@ -91,8 +69,22 @@ export class FrontService {
     return { goods, collects_count, comments: commentsData }
   }
 
-  async comments(dto: CreateCommentDto) {
-    return dto
+  async comments(dto: CreateCommentDto, user: Users) {
+    const orders = await this.prisma.orders.findMany({ where: { userId: user.id } })
+    const isPay = orders.every(async (e) => {
+      const order = await this.prisma.orderDetails.findFirst({ where: { orderId: e.id } })
+      return order.goodId === dto.goodId
+    })
+    if (!isPay)
+      throw new BadRequestException({ message: '商品未购买,不能参与品论' })
+      const isComment = await this.prisma.comments.findFirst({ where: { goodId: dto.goodId, orderId: dto.orderId } })
+      if (isComment)
+        throw new BadRequestException({ message: '已参与评论,不能重复评论' })
+
+     await this.prisma.comments.create({
+      data: { ...dto, userId: user.id },
+    })
+    return { message: '评论成功!' }
   }
 
   buildTree(list: Categories[]) {

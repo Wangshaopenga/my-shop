@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
 import { Users } from '@prisma/client'
-import { Auth } from '../auth/decorator/auth.decorator'
-import { CurrentUser } from '../auth/decorator/user.decorator'
-import { Role } from '../auth/role.enum'
-import { CreateCommentDto } from './dto/create-comment.dto'
+import { Auth } from '../../auth/decorator/auth.decorator'
+import { CurrentUser } from '../../auth/decorator/user.decorator'
+import { Role } from '../../auth/role.enum'
 import { GoodsData } from './entities/GoodsData'
+import { CreateCommentDto } from './dto/create-comment.dto'
 import { GoodsService } from './goods.service'
 
 @Controller('goods')
