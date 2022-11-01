@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Categories, Goods } from '@prisma/client'
-import { CreateCommentDto } from '../goods/dto/create-comment.dto'
 import { PrismaService } from '@/module/prisma/prisma.service'
 
 @Injectable()
@@ -64,35 +63,6 @@ export class IndexService {
       },
     })
     return { goods: goodsInfo, recommend_goods, categories: tree }
-  }
-
-  async goodsDetails(id: number) {
-    const goods = await this.prisma.goods.findUnique({
-      where: {
-        id,
-      },
-    })
-    const comments = await this.prisma.comments.findMany({ where: { goodId: id } })
-    const commentsData = []
-    for (let e of comments) {
-      const user = await this.prisma.users.findUnique({
-        select: {
-          id: true, name: true, avatar: true,
-        },
-        where: { id: e.userId },
-      })
-      commentsData.push({ ...e, user })
-    }
-    const collects_count = await this.prisma.cart.count({
-      where: {
-        goodId: id,
-      },
-    })
-    return { goods, collects_count, comments: commentsData }
-  }
-
-  async comments(dto: CreateCommentDto) {
-    return dto
   }
 
   buildTree(list: Categories[]) {

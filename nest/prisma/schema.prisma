@@ -90,8 +90,8 @@ model Orders {
   id           Int            @id @unique @default(autoincrement()) @db.UnsignedInt //自增长主键ID
   User         Users          @relation(fields: [userId], references: [id])
   userId       Int            @db.UnsignedInt //下单的用户
-  orderNo      String //	订单单号
-  amount       Int //总金额
+  orderNo      String  //	订单单号
+  amount       Float //总金额
   addressId    Int            @db.UnsignedInt //收货地址
   Address      Address        @relation(fields: [addressId], references: [id])
   status       Int? //订单状态: 1下单 2支付 3发货 4收货 5过期
@@ -109,11 +109,11 @@ model Orders {
 // 订单详情表
 model OrderDetails {
   id        Int      @id @default(autoincrement()) @db.UnsignedInt //	自增长主键ID
-  orderId  Int      @db.UnsignedInt //所属订单
+  orderId  Int      @db.UnsignedInt @unique //所属订单
   orders   Orders   @relation(fields: [orderId], references: [id])
   goodId   Int      @db.UnsignedInt //	商品
   goods    Goods    @relation(fields: [goodId], references: [id])
-  price     Int //	商品的价格
+  price     Float //	商品的价格
   num       Int //	商品的数量
   createdAt DateTime @default(now()) //添加时间
   updatedAt DateTime @updatedAt //修改时间

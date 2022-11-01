@@ -76,7 +76,7 @@ export class GoodsService {
       return order.goodId === dto.goodId
     })
     if (!isPay)
-      throw new BadRequestException({ message: '商品未购买,不能参与品论' })
+      throw new BadRequestException({ message: '商品未购买,不能参与评论' })
       const isComment = await this.prisma.comments.findFirst({ where: { goodId: dto.goodId, orderId: dto.orderId } })
       if (isComment)
         throw new BadRequestException({ message: '已参与评论,不能重复评论' })

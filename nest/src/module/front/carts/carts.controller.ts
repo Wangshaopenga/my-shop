@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common'
 import { Users } from '@prisma/client'
 import { CartsService } from './carts.service'
-import { AddCartDto } from './dto/AddCart.dto'
+import { AddCartDto } from './dto/add-cart.dto'
 import { CurrentUser } from '@/module/auth/decorator/user.decorator'
 import { Auth } from '@/module/auth/decorator/auth.decorator'
 
