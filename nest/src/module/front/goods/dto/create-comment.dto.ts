@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer'
 import { IsNotEmpty } from 'class-validator'
-import { IsNotExists } from '@/validate/is-not-exists'
+import { IsNotExists } from '@/common/validate/is-not-exists'
 
 export class CreateCommentDto {
   @Type(() => Number)

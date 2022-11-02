@@ -1,5 +1,5 @@
 import { IsNotEmpty, Length } from 'class-validator'
-import { IsConfirm } from '@/validate/is-confirm'
+import { IsConfirm } from '@/common/validate/is-confirm'
 
 export class UpdateDto {
   @Length(6, 12, { message: '密码长度应为6-12位' })

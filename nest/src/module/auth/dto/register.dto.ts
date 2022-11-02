@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, Length } from 'class-validator'
-import { IsConfirm } from '@/validate/is-confirm'
-import { IsExists } from '@/validate/is-exists'
+import { IsConfirm } from '@/common/validate/is-confirm'
+import { IsExists } from '@/common/validate/is-exists'
 
 export class RegisterDto {
   @IsNotEmpty({ message: '用户名不能为空' })

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,153 +7,160 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 用户表
-model Users {
-  id        Int        @id @unique @default(autoincrement()) @db.UnsignedInt //自增长主键ID
-  name      String     @db.VarChar(255) //昵称
-  email     String     @unique @db.VarChar(255) //邮箱
-  password  String     @db.VarChar(255) //密码
-  phone     String?    @unique @db.VarChar(255) //手机
-  avatar    String?    @db.VarChar(255) //头像
-  is_locked Int?       @default(0) @db.UnsignedInt //用户禁用状态: 0正常 1禁用
+model address {
+  id        Int      @id @unique(map: "Address_id_key") @default(autoincrement()) @db.UnsignedInt
+  userId    Int      @db.UnsignedInt
+  name      String
+  province  String
+  city      String
+  county    String
+  address   String
+  phone     String
+  isDefault Int?     @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  users     users    @relation(fields: [userId], references: [id], map: "Address_userId_fkey")
+  orders    orders[]
+
+  @@index([userId], map: "Address_userId_fkey")
+}
+
+model cart {
+  id        Int      @id @unique(map: "Cart_id_key") @default(autoincrement()) @db.UnsignedInt
+  userId    Int      @db.UnsignedInt
+  goodId    Int      @db.UnsignedInt
+  num       Int?     @default(1)
+  isChecked Int?     @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  goods     goods    @relation(fields: [goodId], references: [id], map: "Cart_goodId_fkey")
+  users     users    @relation(fields: [userId], references: [id], map: "Cart_userId_fkey")
+
+  @@index([goodId], map: "Cart_goodId_fkey")
+  @@index([userId], map: "Cart_userId_fkey")
+}
+
+model categories {
+  id        Int      @id @unique(map: "Categories_id_key") @default(autoincrement()) @db.UnsignedInt
+  name      String   @db.VarChar(255)
+  pid       Int
+  status    Int
+  level     Int
+  group     String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  goods     goods[]
+}
+
+model comments {
+  id        Int      @id @unique(map: "Comments_id_key") @default(autoincrement())
+  userId    Int      @db.UnsignedInt
+  orderId   Int      @db.UnsignedInt
+  goodId    Int      @db.UnsignedInt
+  content   String
+  rate      Int?     @default(1) @db.UnsignedInt
+  star      Int?     @default(5) @db.UnsignedInt
+  reply     String?
+  pics      Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  goods     goods    @relation(fields: [goodId], references: [id], map: "Comments_goodId_fkey")
+  orders    orders   @relation(fields: [orderId], references: [id], map: "Comments_orderId_fkey")
+  users     users    @relation(fields: [userId], references: [id], map: "Comments_userId_fkey")
+
+  @@index([goodId], map: "Comments_goodId_fkey")
+  @@index([orderId], map: "Comments_orderId_fkey")
+  @@index([userId], map: "Comments_userId_fkey")
+}
+
+model goods {
+  id           Int            @id @unique(map: "Goods_id_key") @default(autoincrement()) @db.UnsignedInt
+  userId       Int            @db.UnsignedInt
+  categoryId   Int            @db.UnsignedInt
+  title        String         @db.VarChar(255)
+  description  String         @db.VarChar(255)
+  price        Float
+  stock        Int
+  cover        String         @db.VarChar(255)
+  pics         Json
+  details      String         @db.Text
+  sales        Int?
+  isOn         Int?
+  isRecommend  Int?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  categories   categories     @relation(fields: [categoryId], references: [id], map: "Goods_categoryId_fkey")
+  users        users          @relation(fields: [userId], references: [id], map: "Goods_userId_fkey")
+  cart         cart[]
+  comments     comments[]
+  orderdetails orderdetails[]
+
+  @@index([categoryId], map: "Goods_categoryId_fkey")
+  @@index([userId], map: "Goods_userId_fkey")
+}
+
+model orderdetails {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  orderId   Int      @unique(map: "OrderDetails_orderId_key") @db.UnsignedInt
+  goodId    Int      @db.UnsignedInt
+  price     Float
+  num       Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  goods     goods    @relation(fields: [goodId], references: [id], map: "OrderDetails_goodId_fkey")
+  orders    orders   @relation(fields: [orderId], references: [id], map: "OrderDetails_orderId_fkey")
+
+  @@index([goodId], map: "OrderDetails_goodId_fkey")
+}
+
+model orders {
+  id           Int           @id @unique(map: "Orders_id_key") @default(autoincrement()) @db.UnsignedInt
+  userId       Int           @db.UnsignedInt
+  orderNo      String
+  amount       Float
+  addressId    Int           @db.UnsignedInt
+  status       Int?
+  expressType  String?
+  expressNo    String?
+  payTime      DateTime?
+  payType      String?
+  tradNo       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime
+  address      address       @relation(fields: [addressId], references: [id], map: "Orders_addressId_fkey")
+  users        users         @relation(fields: [userId], references: [id], map: "Orders_userId_fkey")
+  comments     comments[]
+  orderdetails orderdetails?
+
+  @@index([addressId], map: "Orders_addressId_fkey")
+  @@index([userId], map: "Orders_userId_fkey")
+}
+
+model slides {
+  id        Int      @id @unique(map: "Slides_id_key") @default(autoincrement()) @db.UnsignedInt
+  title     String
+  img       String
+  url       String?
+  status    Int?     @default(0)
+  seq       Int?     @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model users {
+  id        Int        @id @unique(map: "Users_id_key") @default(autoincrement()) @db.UnsignedInt
+  name      String     @db.VarChar(255)
+  email     String     @unique(map: "Users_email_key") @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  phone     String?    @unique(map: "Users_phone_key") @db.VarChar(255)
+  avatar    String?    @db.VarChar(255)
+  is_locked Int?       @default(0) @db.UnsignedInt
   role      String?    @default("user")
-  createdAt DateTime   @default(now()) //添加时间
-  updatedAt DateTime   @updatedAt //修改时间
-  Goods     Goods[]
-  Comments  Comments[]
-  Cart      Cart[]
-  Address   Address[]
-  Orders    Orders[]
-}
-
-// 分类表
-model Categories {
-  id        Int      @id @unique @default(autoincrement()) @db.UnsignedInt //自增长主键ID
-  name      String   @db.VarChar(255) //	分类名称
-  pid       Int //	父级
-  status    Int //状态: 0禁用 1启用
-  level     Int //分类级别 1 2 3
-  group     String?   @db.VarChar(255) //	分组: goods 商品分组, menu 菜单分组
-  createdAt DateTime @default(now()) //添加时间
-  updatedAt DateTime @updatedAt //修改时间
-  
-  Goods     Goods[]
-}
-
-// 商品表
-model Goods {
-  id           Int            @id @unique @default(autoincrement()) @db.UnsignedInt //	自增长主键ID
-  User         Users          @relation(fields: [userId], references: [id])
-  userId       Int            @db.UnsignedInt //	创建者
-  Category     Categories     @relation(fields: [categoryId], references: [id])
-  categoryId   Int            @db.UnsignedInt //分类
-  title        String         @db.VarChar(255) //标题
-  description  String         @db.VarChar(255) //描述
-  price        Float //价格
-  stock        Int //库存
-  cover        String         @db.VarChar(255) //	封面图
-  pics         Json //小图集
-  details      String         @db.Text //	详情
-  sales        Int? //	销量
-  isOn         Int? //是否上架 0不上架 1上架
-  isRecommend  Int? //	是否推荐 0不推荐 1推荐
-  createdAt    DateTime       @default(now()) //添加时间
-  updatedAt    DateTime       @updatedAt //修改时间
-  Comments     Comments[]
-  OrderDetails OrderDetails[]
-  Cart         Cart[]
-}
-
-// 评论表
-model Comments {
-  id        Int      @id @unique @default(autoincrement()) //自增长主键ID
-  userId    Int      @db.UnsignedInt //评论的用户
-  User      Users    @relation(fields: [userId], references: [id])
-  orderId   Int      @db.UnsignedInt //	所属订单
-  Orders     Orders   @relation(fields: [orderId], references: [id])
-  goodId    Int      @db.UnsignedInt //所属商品
-  Good      Goods    @relation(fields: [goodId], references: [id])
-  content   String //	评论的内容
-  rate      Int?     @default(1) @db.UnsignedInt //	评论的级别: 1好评 2中评 3差评
-  star      Int?     @default(5) @db.UnsignedInt //评论星级： 0-5星
-  reply     String? //	商家的回复
-  pics      Json? //	多个评论图
-  createdAt DateTime @default(now()) //添加时间
-  updatedAt DateTime @updatedAt //修改时间
-}
-
-// 订单主表
-model Orders {
-  id           Int            @id @unique @default(autoincrement()) @db.UnsignedInt //自增长主键ID
-  User         Users          @relation(fields: [userId], references: [id])
-  userId       Int            @db.UnsignedInt //下单的用户
-  orderNo      String  //	订单单号
-  amount       Float //总金额
-  addressId    Int            @db.UnsignedInt //收货地址
-  Address      Address        @relation(fields: [addressId], references: [id])
-  status       Int? //订单状态: 1下单 2支付 3发货 4收货 5过期
-  expressType  String? //	快递类型: SF YTO YD
-  expressNo    String? //	快递单号
-  payTime      DateTime? //	支付时间
-  payType      String? //	支付类型: 支付宝 微信
-  tradNo       String? //	支付单号
-  createdAt    DateTime       @default(now()) //添加时间
-  updatedAt    DateTime       @updatedAt //修改时间
-  Comments     Comments[]
-  OrderDetails OrderDetails[]
-}
-
-// 订单详情表
-model OrderDetails {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt //	自增长主键ID
-  orderId  Int      @db.UnsignedInt @unique //所属订单
-  orders   Orders   @relation(fields: [orderId], references: [id])
-  goodId   Int      @db.UnsignedInt //	商品
-  goods    Goods    @relation(fields: [goodId], references: [id])
-  price     Float //	商品的价格
-  num       Int //	商品的数量
-  createdAt DateTime @default(now()) //添加时间
-  updatedAt DateTime @updatedAt //修改时间
-}
-
-// 轮播图表
-model Slides {
-  id        Int      @id @unique @default(autoincrement()) @db.UnsignedInt //自增长主键ID
-  title     String //轮播图名称
-  img       String //轮播图图片
-  url       String? //	跳转连接
-  status    Int?     @default(0) //状态: 0禁用 1正常
-  seq       Int?     @default(1)  //排序
-  createdAt DateTime @default(now()) //添加时间
-  updatedAt DateTime @updatedAt //修改时间
-}
-
-// 购物车
-model Cart {
-  id        Int      @id @unique @default(autoincrement()) @db.UnsignedInt //自增长主键ID
-  users    Users    @relation(fields: [userId], references: [id])
-  userId   Int      @db.UnsignedInt //	用户ID
-  goods    Goods    @relation(fields: [goodId], references: [id])
-  goodId   Int      @db.UnsignedInt //商品ID
-  num       Int?     @default(1) //	商品数量
-  isChecked Int?     @default(1) //	是否选择: 0不选 1选中
-  createdAt DateTime @default(now()) //添加时间
-  updatedAt DateTime @updatedAt //修改时间
-}
-
-// 收货地址表
-model Address {
-  id        Int      @id @unique @default(autoincrement()) @db.UnsignedInt //自增长主键ID
-  users    Users    @relation(fields: [userId], references: [id])
-  userId   Int      @db.UnsignedInt //用户ID
-  name      String //收货人
-  province  String //省份
-  city      String //城市
-  county    String //区县
-  address   String //详细地址
-  phone     String //手机号
-  isDefault Int?     @default(0) //	是否是默认地址: 0不是默认 1是默认
-  createdAt DateTime @default(now()) //添加时间
-  updatedAt DateTime @updatedAt //修改时间
-  Orders    Orders[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime
+  address   address[]
+  cart      cart[]
+  comments  comments[]
+  goods     goods[]
+  orders    orders[]
 }

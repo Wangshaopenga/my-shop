@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@huazai5m/nt-addon-pay': ^1.0.1
+  '@nestjs/axios': ^0.1.0
   '@nestjs/cli': ^9.0.0
   '@nestjs/common': ^9.0.0
   '@nestjs/config': ^2.2.0
@@ -49,6 +50,7 @@ specifiers:
 
 dependencies:
   '@huazai5m/nt-addon-pay': 1.0.1
+  '@nestjs/axios': 0.1.0_6fl4rox5ofo3yz2h7ukpny327a
   '@nestjs/common': 9.1.4_x6yqyveuahcdef4z4mxykmuv6a
   '@nestjs/config': 2.2.0_6fl4rox5ofo3yz2h7ukpny327a
   '@nestjs/core': 9.1.4_os3bpar6zvfsuh6rrdsifrg6hi
@@ -464,6 +466,21 @@ packages:
 
   /@microsoft/tsdoc/0.14.1:
     resolution: {integrity: sha512-6Wci+Tp3CgPt/B9B0a3J4s3yMgLNSku6w5TV6mN+61C71UqsRBv2FUibBf3tPGlNxebgPHMEUzKpb1ggE8KCKw==}
+    dev: false
+
+  /@nestjs/axios/0.1.0_6fl4rox5ofo3yz2h7ukpny327a:
+    resolution: {integrity: sha512-b2TT2X6BFbnNoeteiaxCIiHaFcSbVW+S5yygYqiIq5i6H77yIU3IVuLdpQkHq8/EqOWFwMopLN8jdkUT71Am9w==}
+    peerDependencies:
+      '@nestjs/common': ^7.0.0 || ^8.0.0 || ^9.0.0
+      reflect-metadata: ^0.1.12
+      rxjs: ^6.0.0 || ^7.0.0
+    dependencies:
+      '@nestjs/common': 9.1.4_x6yqyveuahcdef4z4mxykmuv6a
+      axios: 0.27.2
+      reflect-metadata: 0.1.13
+      rxjs: 7.5.7
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /@nestjs/cli/9.1.4:
@@ -1543,6 +1560,15 @@ packages:
 
   /aws4/1.11.0:
     resolution: {integrity: sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==}
+    dev: false
+
+  /axios/0.27.2:
+    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
+    dependencies:
+      follow-redirects: 1.15.2
+      form-data: 4.0.0
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /backo2/1.0.2:
@@ -3154,6 +3180,16 @@ packages:
   /flatted/3.2.7:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}
 
+  /follow-redirects/1.15.2:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dev: false
+
   /forever-agent/0.6.1:
     resolution: {integrity: sha512-j0KLYPhm6zeac4lz3oJ3o65qvgQCcPubiyotZrXqEaG4hNagNYO8qdlUrX5vwqv9ohqeT/Z3j6+yW067yWWdUw==}
     dev: false
@@ -3201,7 +3237,6 @@ packages:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
-    dev: true
 
   /format/0.2.2:
     resolution: {integrity: sha512-wzsgA6WOq+09wrU1tsJ09udeR/YZRaeArL9e1wPbFg3GG2yDnC2ldKpxs4xunpFF9DgqCqOIra3bc1HWrJ37Ww==}

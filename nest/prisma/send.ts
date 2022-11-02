@@ -44,7 +44,7 @@ async function goods() {
       description: Random.cparagraph(),
       details: Random.cparagraph(),
       pics: Random.image('120x120'),
-      price: Random.float(10, 200),
+      price: Random.float(10, 200, 2, 2),
       title: Random.ctitle(),
       stock: Random.integer(30, 100),
       sales: Random.integer(30, 100),
@@ -120,17 +120,18 @@ async function orders_detail(id: number) {
 }
 
 async function run() {
-  for (let i = 531; i < 560; i++)
+  for (let i = 1; i < 31; i++)
+
     // await user()
     // await category()
     // await address(i + 1)
     // await orders()
     // await goods()
-    await orders_detail(i + 1)
+    // await orders_detail(i + 1)
     // await cart()
     // await slides()
     // await comments()
-  console.log('finish')
+    console.log('finish')
 }
 
 run()

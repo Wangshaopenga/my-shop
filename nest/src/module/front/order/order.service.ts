@@ -3,14 +3,16 @@ import { ConfigService } from '@nestjs/config'
 import { Users } from '@prisma/client'
 import * as dayjs from 'dayjs'
 import { Random } from 'mockjs'
-import AliPaySdk from 'alipay-sdk'
 import AliPayForm from 'alipay-sdk/lib/form'
+import { HttpService } from '@nestjs/axios'
+import { lastValueFrom } from 'rxjs'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { OrderListDto } from './dto/order-list.dto'
 import { PrismaService } from '@/module/prisma/prisma.service'
+import { alipaySdk } from '@/common'
 @Injectable()
 export class OrderService {
-  constructor(private prisma: PrismaService, private config: ConfigService) { }
+  constructor(private prisma: PrismaService, private config: ConfigService, private http: HttpService) { }
 
   async preview(user: Users) {
     const address = await this.prisma.address.findMany({ where: { userId: user.id } })
@@ -132,30 +134,99 @@ export class OrderService {
       return { message: '收货成功!' }
   }
 
-  async pay(id: number, type: 'aliyun' | 'wechat') {
+  async paytest(id: number, type: 'aliyun' | 'wechat') {
     if (type !== 'aliyun' && type !== 'wechat')
       throw new BadRequestException('支付类型错误')
     const orderDetail = await this.prisma.orderDetails.findFirst({ where: { orderId: id } })
     const good = await this.prisma.goods.findUnique({ where: { id: orderDetail.goodId } })
-    const alipaySdk = new AliPaySdk({
-      appId: this.config.get('APPID'), // appid
-      gateway: 'https://openapi.alipaydev.com/gateway.do', // 支付宝沙箱测试网关
-      privateKey: this.config.get('PRIVATEKEY'), // 应用私钥
-      alipayPublicKey: this.config.get('ALIPAYPUBLICKEY'), // 支付宝公钥：
-    })
-    const orderInfo = {
+    const info = {
       outTradeNo: `D${dayjs().format('YYYYMMDDHHmmssSSS')}${Random.integer(100, 999)}`, // 订单号
       totalAmount: orderDetail.price * orderDetail.num, // 金额
       subject: `在少鹏商城购买${good.title} 等${orderDetail.num}商品`, // 内容
     }
+    return info
+  }
+
+  async pay(id: number, type: 'aliyun' | 'wechat') {
+    if (type !== 'aliyun' && type !== 'wechat')
+      throw new BadRequestException('支付类型错误')
+    const orderInfo = await this.paytest(id, type)
     const formData = new AliPayForm()
     formData.setMethod('get')
     formData.addField('bizContent', {
-      productCode: 'FAST_INSTANT_TRADE_PAY', // 产品码
+      productCode: 'FACE_TO_FACE_PAYMENT', // 产品码
       ...orderInfo,
     })
     // // 执行结果
-    const reult = await alipaySdk.exec('alipay.trade.page.pay', {}, { formData })
-    return { link: reult }
+    const result = await alipaySdk.exec('alipay.trade.precreate', {}, { formData })
+    const response$ = this.http.get(result as string)
+    const res = await lastValueFrom(response$)
+    const payInfo = res.data.alipay_trade_precreate_response
+    // return payInfo
+    if (payInfo.code === '10000') { // 接口调用成功
+      await this.prisma.orders.update({
+        where: { id },
+        data: {
+          tradNo: orderInfo.outTradeNo,
+          payType: type,
+          payTime: (new Date()),
+        },
+      })
+      return {
+        code: payInfo.code,
+        msg: payInfo.msg,
+        out_trade_no: orderInfo.outTradeNo,
+        qr_ode: payInfo.qr_code,
+        ar_code_url: `https://api.nbhao.org/v1/qrcode/make?text=${payInfo.qr_code}`,
+      }
+    }
+    else if (payInfo.code === '40004') {
+      throw new BadRequestException(`${payInfo.sub_msg}`)
+    }
+  }
+
+  async payStatus(id: number) {
+    const order = await this.prisma.orders.findUnique({ where: { id } })
+    const formData = new AliPayForm()
+    formData.setMethod('get')
+    formData.addField('bizContent', {
+      out_trade_no: order.tradNo,
+    })
+    const result = await alipaySdk.exec('alipay.trade.query', {}, { formData })
+    const response$ = this.http.get(result as string)
+    const res = await lastValueFrom(response$)
+    const data = res.data.alipay_trade_query_response
+    if (data.code === '10000') {
+      switch (data.trade_status) {
+        case 'WAIT_BUYER_PAY':
+          return 1
+        case 'TRADE_SUCCESS':
+          await this.prisma.orders.update({ where: { id }, data: { status: 2 } })
+          return 2
+        default:
+          break
+      }
+    }
+    else if (data.code === '40004') {
+      throw new BadRequestException(data.sub_msg)
+    }
+  }
+
+  async returnPay(id: number) {
+    const order = await this.prisma.orders.findUnique({ where: { id } })
+    const formData = new AliPayForm()
+    formData.setMethod('get')
+    formData.addField('bizContent', {
+      out_trade_no: order.tradNo,
+      refund_amount: order.amount,
+    })
+    const result = await alipaySdk.exec('alipay.trade.refund', {}, { formData })
+    const response$ = this.http.get(result as string)
+    const res = await lastValueFrom(response$)
+    const data = res.data.alipay_trade_refund_response
+    if (data.code === '10000')
+      await this.prisma.orders.update({ where: { id }, data: { status: 6 } })
+    else
+      throw new BadRequestException(data.sub_msg)
   }
 }

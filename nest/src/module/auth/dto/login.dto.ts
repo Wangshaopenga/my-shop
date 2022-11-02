@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, Length } from 'class-validator'
-import { IsNotExists } from '@/validate/is-not-exists'
+import { IsNotExists } from '@/common/validate/is-not-exists'
 
 export class LoginDto {
   @IsNotEmpty({ message: '邮箱不能为空' })

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { AuthModule } from '../auth/auth.module'
+import { AddressModule } from '../front/address/address.module'
 import { CartsModule } from '../front/carts/carts.module'
 import { GoodsModule } from '../front/goods/goods.module'
 import { IndexModule } from '../front/index/index.module'
@@ -18,6 +19,7 @@ import { PrismaModule } from '../prisma/prisma.module'
     UserModule,
     CartsModule,
     OrderModule,
+    AddressModule,
   ],
   controllers: [],
   providers: [],
