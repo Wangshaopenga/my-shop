@@ -26,13 +26,24 @@ export class GoodsService {
         { sales: +sales === 2 ? 'asc' : 'desc' },
       ],
     })
+    const total = await this.prisma.goods.count({
+      where: {
+        categoryId: categoryId ? +categoryId : {},
+        title: {
+          contains: title,
+        },
+      },
+    })
+    const total_page = Number((total / row).toFixed(0)) + 1
     const goodsInfo = {
       current_page: page,
+      total_page,
       data: await this.getGoodsDate(goods),
       from: (page - 1) * row + 1,
       to: (page - 1) * row + 1 + goods.length,
       first_page_url: `${this.config.get('URL')}/index?page=${1}&recommend=${recommend}`,
-      next_page_url: `${this.config.get('URL')}/index?page=${+page + 1}&recommend=${recommend}`,
+      previous_url: page === 1 ? null : `${this.config.get('URL')}/index?page=${+page + 1}&recommend=${recommend}`,
+      next_page_url: page + 1 > total_page ? null : `${this.config.get('URL')}/index?page=${+page + 1}&recommend=${recommend}`,
       per_page: row,
     }
     const recommend_goods = await this.prisma.goods.findMany({
@@ -77,11 +88,11 @@ export class GoodsService {
     })
     if (!isPay)
       throw new BadRequestException({ message: '商品未购买,不能参与评论' })
-      const isComment = await this.prisma.comments.findFirst({ where: { goodId: dto.goodId, orderId: dto.orderId } })
-      if (isComment)
-        throw new BadRequestException({ message: '已参与评论,不能重复评论' })
+    const isComment = await this.prisma.comments.findFirst({ where: { goodId: dto.goodId, orderId: dto.orderId } })
+    if (isComment)
+      throw new BadRequestException({ message: '已参与评论,不能重复评论' })
 
-     await this.prisma.comments.create({
+    await this.prisma.comments.create({
       data: { ...dto, userId: user.id },
     })
     return { message: '评论成功!' }

@@ -4,7 +4,7 @@ import { Categories, Goods } from '@prisma/client'
 import { PrismaService } from '@/module/prisma/prisma.service'
 
 @Injectable()
-export class IndexService {
+export class FrontService {
   constructor(private prisma: PrismaService, private config: ConfigService) { }
 
   async getIndex(page = 1, recommend = 1) {

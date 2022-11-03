@@ -1,12 +1,8 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
+import { AdminModule } from '../admin/admin/admin.module'
 import { AuthModule } from '../auth/auth.module'
-import { AddressModule } from '../front/address/address.module'
-import { CartsModule } from '../front/carts/carts.module'
-import { GoodsModule } from '../front/goods/goods.module'
-import { IndexModule } from '../front/index/index.module'
-import { OrderModule } from '../front/order/order.module'
-import { UserModule } from '../front/user/user.module'
+import { FrontModule } from '../front/index/front.module'
 import { PrismaModule } from '../prisma/prisma.module'
 
 @Module({
@@ -14,12 +10,8 @@ import { PrismaModule } from '../prisma/prisma.module'
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     PrismaModule,
-    IndexModule,
-    GoodsModule,
-    UserModule,
-    CartsModule,
-    OrderModule,
-    AddressModule,
+    FrontModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [],
