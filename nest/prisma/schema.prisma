@@ -44,8 +44,8 @@ model categories {
   id        Int      @id @unique(map: "Categories_id_key") @default(autoincrement()) @db.UnsignedInt
   name      String   @db.VarChar(255)
   pid       Int
-  status    Int
-  level     Int
+  status    Int      @default(0)
+  level     Int  
   group     String?  @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime
