@@ -40,7 +40,7 @@ export class UsersService {
       },
     })
     const current_page = page
-    const total_page = total % row === 0 ? Number((total / row).toFixed(0)) : Number((total / row).toFixed(0)) + 1
+    const total_page = Math.ceil(total / row)
     const links = current_page === total_page
       ? null
       : {

@@ -35,12 +35,12 @@ export class GoodsService {
       },
     })
     const current_page = +dto.page
-    const total_page = total % row === 0 ? Number((total / row).toFixed(0)) : Number((total / row).toFixed(0)) + 1
+    const total_page = Math.ceil(total / row)
     const links = current_page === total_page
       ? null
       : {
-        previous_url: current_page === 1 ? null : `${this.config.get('URL')}/orders?page=${current_page - 1}`,
-        next_url: current_page + 1 > total_page ? null : `${this.config.get('URL')}/orders?page=${current_page + 1}`,
+        previous_url: current_page === 1 ? null : `${this.config.get('URL')}/admin/goods?page=${current_page - 1}&title=${dto.title}&categoryId=${dto.categoryId}&isOn=${dto.isOn}&isRecommend=${dto.isRecommend}`,
+        next_url: current_page + 1 > total_page ? null : `${this.config.get('URL')}/admin/goods?page=${current_page + 1}&title=${dto.title}&categoryId=${dto.categoryId}&isOn=${dto.isOn}&isRecommend=${dto.isRecommend}`,
       }
     const pagination = {
       total,

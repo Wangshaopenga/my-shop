@@ -34,7 +34,7 @@ export class GoodsService {
         },
       },
     })
-    const total_page = total % row === 0 ? Number((total / row).toFixed(0)) : Number((total / row).toFixed(0)) + 1
+    const total_page = Math.ceil(total / row)
     const goodsInfo = {
       current_page: page,
       total_page,
