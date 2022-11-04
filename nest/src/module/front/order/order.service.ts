@@ -110,7 +110,7 @@ export class OrderService {
     })
     const total = await this.prisma.orders.count({ where: { userId: user.id, status: dto.status } })
     const current_page = dto.page
-    const total_page = Number((total / row).toFixed(0)) + 1
+    const total_page = total % row === 0 ? Number((total / row).toFixed(0)) : Number((total / row).toFixed(0)) + 1
     const links = current_page === total_page
       ? null
       : {

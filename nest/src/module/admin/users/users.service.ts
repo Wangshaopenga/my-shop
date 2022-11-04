@@ -10,7 +10,6 @@ import { PrismaService } from '@/module/prisma/prisma.service'
 export class UsersService {
   constructor(private prisma: PrismaService, private config: ConfigService) { }
   async usersList(page = 1, name?: string, email?: string, phone?: string) {
-    // console.log(name || '', email || '', phone || '')
     const row: number = this.config.get('USERS_PAGE_ROW')
     let data = await this.prisma.users.findMany({
       skip: (+page - 1) * +row,
@@ -41,7 +40,7 @@ export class UsersService {
       },
     })
     const current_page = page
-    const total_page = Number((total / row).toFixed(0)) + 1
+    const total_page = total % row === 0 ? Number((total / row).toFixed(0)) : Number((total / row).toFixed(0)) + 1
     const links = current_page === total_page
       ? null
       : {

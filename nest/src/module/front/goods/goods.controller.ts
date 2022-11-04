@@ -1,18 +1,18 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
 import { Users } from '@prisma/client'
-import { Auth } from '../../auth/decorator/auth.decorator'
-import { CurrentUser } from '../../auth/decorator/user.decorator'
-import { Role } from '../../auth/role.enum'
-import { GoodsData } from './entities/GoodsData'
 import { CreateCommentDto } from './dto/create-comment.dto'
+import { QueryGoodsDto } from './dto/query.goods.dto'
 import { GoodsService } from './goods.service'
+import { Auth } from '@/common/decorator/auth.decorator'
+import { CurrentUser } from '@/common/decorator/user.decorator'
+import { Role } from '@/common/enum/role.enum'
 
 @Controller('goods')
 export class GoodsController {
   constructor(private readonly goodsService: GoodsService) {}
 
   @Get()
-  getGoods(@Query() query: GoodsData) {
+  getGoods(@Query() query: QueryGoodsDto) {
     for (let e in query) {
       if (!query[e])
         query[e] = undefined

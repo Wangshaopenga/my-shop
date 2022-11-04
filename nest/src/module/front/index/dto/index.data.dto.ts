@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer'
 
-export class IndexData {
+export class IndexDataDto {
   @Type(() => Number)
   page?: number
 

@@ -32,8 +32,13 @@ async function address(id: number) {
 async function cart() {
   await prisma.cart.create({
     data: {
-      goodId: Random.integer(1, 30),
-      userId: Random.integer(1, 21),
+      // goodId: Random.integer(1, 30),
+      // userId: Random.integer(1, 21),
+      userId: 1,
+      goodId: 1,
+      num: 1,
+      isChecked: 1,
+      id: 111,
     },
   })
 }

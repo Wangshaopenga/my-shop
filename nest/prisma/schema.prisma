@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model address {
+model Address {
   id        Int      @id @unique(map: "Address_id_key") @default(autoincrement()) @db.UnsignedInt
   userId    Int      @db.UnsignedInt
   name      String
@@ -18,41 +18,41 @@ model address {
   phone     String
   isDefault Int?     @default(0)
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  users     users    @relation(fields: [userId], references: [id], map: "Address_userId_fkey")
-  orders    orders[]
+  updatedAt DateTime @updatedAt
+  users     Users    @relation(fields: [userId], references: [id], map: "Address_userId_fkey")
+  orders    Orders[]
 
   @@index([userId], map: "Address_userId_fkey")
 }
 
-model cart {
+model Cart {
   id        Int      @id @unique(map: "Cart_id_key") @default(autoincrement()) @db.UnsignedInt
   userId    Int      @db.UnsignedInt
   goodId    Int      @db.UnsignedInt
   num       Int?     @default(1)
   isChecked Int?     @default(1)
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  goods     goods    @relation(fields: [goodId], references: [id], map: "Cart_goodId_fkey")
-  users     users    @relation(fields: [userId], references: [id], map: "Cart_userId_fkey")
+  updatedAt DateTime @updatedAt
+  goods     Goods    @relation(fields: [goodId], references: [id], map: "Cart_goodId_fkey")
+  users     Users    @relation(fields: [userId], references: [id], map: "Cart_userId_fkey")
 
   @@index([goodId], map: "Cart_goodId_fkey")
   @@index([userId], map: "Cart_userId_fkey")
 }
 
-model categories {
+model Categories {
   id        Int      @id @unique(map: "Categories_id_key") @default(autoincrement()) @db.UnsignedInt
   name      String   @db.VarChar(255)
   pid       Int
   status    Int      @default(0)
-  level     Int  
+  level     Int
   group     String?  @db.VarChar(255)
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  goods     goods[]
+  updatedAt DateTime @updatedAt
+  goods     Goods[]
 }
 
-model comments {
+model Comments {
   id        Int      @id @unique(map: "Comments_id_key") @default(autoincrement())
   userId    Int      @db.UnsignedInt
   orderId   Int      @db.UnsignedInt
@@ -63,17 +63,17 @@ model comments {
   reply     String?
   pics      Json?
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  goods     goods    @relation(fields: [goodId], references: [id], map: "Comments_goodId_fkey")
-  orders    orders   @relation(fields: [orderId], references: [id], map: "Comments_orderId_fkey")
-  users     users    @relation(fields: [userId], references: [id], map: "Comments_userId_fkey")
+  updatedAt DateTime @updatedAt
+  goods     Goods    @relation(fields: [goodId], references: [id], map: "Comments_goodId_fkey")
+  orders    Orders   @relation(fields: [orderId], references: [id], map: "Comments_orderId_fkey")
+  users     Users    @relation(fields: [userId], references: [id], map: "Comments_userId_fkey")
 
   @@index([goodId], map: "Comments_goodId_fkey")
   @@index([orderId], map: "Comments_orderId_fkey")
   @@index([userId], map: "Comments_userId_fkey")
 }
 
-model goods {
+model Goods {
   id           Int            @id @unique(map: "Goods_id_key") @default(autoincrement()) @db.UnsignedInt
   userId       Int            @db.UnsignedInt
   categoryId   Int            @db.UnsignedInt
@@ -82,38 +82,38 @@ model goods {
   price        Float
   stock        Int
   cover        String         @db.VarChar(255)
-  pics         Json
+  pics         Json?
   details      String         @db.Text
-  sales        Int?
-  isOn         Int?
-  isRecommend  Int?
+  sales        Int?           @default(0)
+  isOn         Int?           @default(0)
+  isRecommend  Int?           @default(0)
   createdAt    DateTime       @default(now())
-  updatedAt    DateTime
-  categories   categories     @relation(fields: [categoryId], references: [id], map: "Goods_categoryId_fkey")
-  users        users          @relation(fields: [userId], references: [id], map: "Goods_userId_fkey")
-  cart         cart[]
-  comments     comments[]
-  orderdetails orderdetails[]
+  updatedAt    DateTime       @updatedAt
+  categories   Categories     @relation(fields: [categoryId], references: [id], map: "Goods_categoryId_fkey")
+  users        Users          @relation(fields: [userId], references: [id], map: "Goods_userId_fkey")
+  cart         Cart[]
+  comments     Comments[]
+  orderDetails OrderDetails[]
 
   @@index([categoryId], map: "Goods_categoryId_fkey")
   @@index([userId], map: "Goods_userId_fkey")
 }
 
-model orderdetails {
+model OrderDetails {
   id        Int      @id @default(autoincrement()) @db.UnsignedInt
   orderId   Int      @unique(map: "OrderDetails_orderId_key") @db.UnsignedInt
   goodId    Int      @db.UnsignedInt
   price     Float
   num       Int
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  goods     goods    @relation(fields: [goodId], references: [id], map: "OrderDetails_goodId_fkey")
-  orders    orders   @relation(fields: [orderId], references: [id], map: "OrderDetails_orderId_fkey")
+  updatedAt DateTime @updatedAt
+  goods     Goods    @relation(fields: [goodId], references: [id], map: "OrderDetails_goodId_fkey")
+  orders    Orders   @relation(fields: [orderId], references: [id], map: "OrderDetails_orderId_fkey")
 
   @@index([goodId], map: "OrderDetails_goodId_fkey")
 }
 
-model orders {
+model Orders {
   id           Int           @id @unique(map: "Orders_id_key") @default(autoincrement()) @db.UnsignedInt
   userId       Int           @db.UnsignedInt
   orderNo      String
@@ -126,17 +126,17 @@ model orders {
   payType      String?
   tradNo       String?
   createdAt    DateTime      @default(now())
-  updatedAt    DateTime
-  address      address       @relation(fields: [addressId], references: [id], map: "Orders_addressId_fkey")
-  users        users         @relation(fields: [userId], references: [id], map: "Orders_userId_fkey")
-  comments     comments[]
-  orderdetails orderdetails?
+  updatedAt    DateTime      @updatedAt
+  address      Address       @relation(fields: [addressId], references: [id], map: "Orders_addressId_fkey")
+  users        Users         @relation(fields: [userId], references: [id], map: "Orders_userId_fkey")
+  comments     Comments[]
+  orderDetails OrderDetails?
 
   @@index([addressId], map: "Orders_addressId_fkey")
   @@index([userId], map: "Orders_userId_fkey")
 }
 
-model slides {
+model Slides {
   id        Int      @id @unique(map: "Slides_id_key") @default(autoincrement()) @db.UnsignedInt
   title     String
   img       String
@@ -144,10 +144,10 @@ model slides {
   status    Int?     @default(0)
   seq       Int?     @default(1)
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
 }
 
-model users {
+model Users {
   id        Int        @id @unique(map: "Users_id_key") @default(autoincrement()) @db.UnsignedInt
   name      String     @db.VarChar(255)
   email     String     @unique(map: "Users_email_key") @db.VarChar(255)
@@ -157,10 +157,10 @@ model users {
   is_locked Int?       @default(0) @db.UnsignedInt
   role      String?    @default("user")
   createdAt DateTime   @default(now())
-  updatedAt DateTime
-  address   address[]
-  cart      cart[]
-  comments  comments[]
-  goods     goods[]
-  orders    orders[]
+  updatedAt DateTime   @updatedAt
+  address   Address[]
+  cart      Cart[]
+  comments  Comments[]
+  goods     Goods[]
+  orders    Orders[]
 }

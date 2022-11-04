@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer'
 
-export class GoodsData {
+export class QueryGoodsDto {
   @Type(() => Number)
   page?: number
 
