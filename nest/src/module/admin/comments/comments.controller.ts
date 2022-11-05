@@ -24,7 +24,7 @@ export class CommentsController {
   }
 
   @Delete('/:comment/delete')
-  delComment(@Param('comment') id:number) {
+  delComment(@Param('comment') id: number) {
     return this.commentsService.delComment(+id)
   }
 }
